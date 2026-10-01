@@ -1,220 +1,225 @@
-# U.S. Recession Probability Model — 12-Month Ahead
+# Modelo de probabilidad de recesión en EE. UU. — horizonte de 12 meses
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Licencia: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SecondOrderEdge/Recession_Probability_Model/blob/main/Recession_Probability_Model.ipynb)
-[![GitHub stars](https://img.shields.io/github/stars/SecondOrderEdge/Recession_Probability_Model?style=social)](https://github.com/SecondOrderEdge/Recession_Probability_Model/stargazers)
-[![Weekly Report](https://github.com/SecondOrderEdge/Recession_Probability_Model/actions/workflows/daily_recession_report.yml/badge.svg)](https://github.com/SecondOrderEdge/Recession_Probability_Model/actions/workflows/daily_recession_report.yml)
+[![Abrir en Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/owoc9103/Informe_recesion/blob/main/Recession_Probability_Model.ipynb)
+[![Informe semanal](https://github.com/owoc9103/Informe_recesion/actions/workflows/daily_recession_report.yml/badge.svg)](https://github.com/owoc9103/Informe_recesion/actions/workflows/daily_recession_report.yml)
 
-A five-model ensemble that estimates the probability of a U.S. recession occurring within the next 12 months, using 37 FRED indicators across eight macroeconomic categories. Generates an automated weekly investment committee briefing with embedded charts via Claude API.
+Ensamble de cinco modelos que estima la probabilidad de que Estados Unidos entre en recesión en los próximos 12 meses, con 37 indicadores de FRED en ocho categorías macroeconómicas. Cada lunes genera un informe para comité de inversión, en español y con los gráficos incrustados. El texto lo redacta Qwen 3.8 27B a través de la API de Groq.
 
-Built on the academic framework established by Estrella and Mishkin (1996, 1998) and currently used by the New York Fed and Cleveland Fed.
-
----
-
-## What This Does
-
-Every Monday morning, a GitHub Actions pipeline:
-
-1. Pulls the latest data from the Federal Reserve's FRED database (37 indicators)
-2. Runs a probit regression with BIC-based feature selection and economic sign constraints
-3. Computes a five-model ensemble probability with bootstrap confidence intervals
-4. Generates 7 charts covering probability trends, indicator dashboards, model comparison, sensitivity triggers, and historical context
-5. Sends Claude API the model output + charts, which writes a structured investment committee memo
-6. Delivers the memo via email with all charts embedded inline
-
-The ensemble averages across five methodologically distinct models: NY Fed spread-only, Wright two-factor, BIC-selected multivariate, Estrella-Mishkin closed-form, and Chauvet-Piger Markov-switching.
+El marco académico es el de Estrella y Mishkin (1996, 1998), el mismo que usan la Fed de Nueva York y la Fed de Cleveland. El código de origen está en [SecondOrderEdge/Recession_Probability_Model](https://github.com/SecondOrderEdge/Recession_Probability_Model). Esta copia cambia la redacción del correo: usa Groq en lugar de Claude y deja el informe en español. Los códigos de las variables (`SPREAD`, `FEDFUNDS`, `HSN1F_YOY` y el resto) no se traducen.
 
 ---
 
-## Quick Start
+## Qué hace
 
-### Option A: Google Colab (interactive exploration)
+Cada lunes por la mañana, un flujo de GitHub Actions:
 
-1. Open `Recession_Probability_Model.ipynb` in [Google Colab](https://colab.research.google.com/)
-2. Get a free FRED API key at https://fred.stlouisfed.org/docs/api/fred/
-3. Run all cells — handles installation, data fetching, modeling, and visualization
+1. Descarga los datos más recientes de FRED, la base del Banco de la Reserva Federal (37 indicadores).
+2. Estima una regresión probit con selección de variables por BIC y restricciones de signo económico.
+3. Calcula la probabilidad del ensamble de cinco modelos, con intervalos de confianza por bootstrap.
+4. Genera 7 gráficos: tendencia de la probabilidad, tablero de indicadores, comparación de modelos, umbrales de sensibilidad y contexto histórico.
+5. Envía la salida del modelo a Qwen, que escribe el memorando en español.
+6. Manda el memorando por correo, con los gráficos incrustados.
 
-### Option B: Automated weekly reports (fork and deploy)
+El ensamble es el promedio simple de cinco modelos distintos: NY Fed (solo `SPREAD`), Wright (dos factores), multivariado seleccionado por BIC, forma cerrada de Estrella-Mishkin y el Markov-switching de Chauvet-Piger.
 
-1. **Fork this repository**
+---
 
-2. **Add GitHub Secrets** (Settings > Secrets and variables > Actions):
+## Arranque rápido
 
-   | Secret | Required | Description |
-   |--------|----------|-------------|
-   | `FRED_API_KEY` | Yes | Free key from https://fred.stlouisfed.org/docs/api/fred/ |
-   | `ANTHROPIC_API_KEY` | Yes | Claude API key from https://console.anthropic.com/ |
-   | `MAIL_USERNAME` | No | Gmail address for sending reports |
-   | `MAIL_PASSWORD` | No | Gmail app password (from https://myaccount.google.com/apppasswords) |
-   | `MAIL_PORT` | No | SMTP port, typically `587` |
-   | `EMAIL_TO` | No | Recipient email(s), comma-separated |
+### Opción A: Google Colab (exploración interactiva)
 
-3. **Enable the workflow**: Actions tab > "Weekly Recession Probability Report" > Enable
+1. Abre `Recession_Probability_Model.ipynb` en [Google Colab](https://colab.research.google.com/).
+2. Pide una clave gratuita de FRED en https://fred.stlouisfed.org/docs/api/fred/.
+3. Ejecuta todas las celdas. El cuaderno instala dependencias, descarga datos, estima y grafica.
 
-4. **Test**: Click "Run workflow" to trigger immediately
+### Opción B: informe semanal automático
 
-Without Gmail credentials, the email report is saved as an HTML file in the workflow artifacts.
+1. El flujo vive en este repositorio: [owoc9103/Informe_recesion](https://github.com/owoc9103/Informe_recesion).
 
-### Option C: Run locally
+2. **Agrega los secretos de GitHub** (Settings > Secrets and variables > Actions):
 
-```bash
-git clone https://github.com/SecondOrderEdge/Recession_Probability_Model.git
-cd Recession_Probability_Model
+   | Secreto | ¿Obligatorio? | Descripción |
+   |---------|---------------|-------------|
+   | `FRED_API_KEY` | Sí | Clave gratuita de https://fred.stlouisfed.org/docs/api/fred/ |
+   | `GROQ_API_KEY` | Sí | Clave de https://console.groq.com/keys. El modelo es `qwen/qwen3.8-27b` |
+   | `MAIL_USERNAME` | No | Dirección de Gmail que envía el informe |
+   | `MAIL_PASSWORD` | No | Contraseña de aplicación de Gmail (https://myaccount.google.com/apppasswords) |
+   | `MAIL_PORT` | No | Puerto SMTP, normalmente `587` |
+   | `EMAIL_TO` | No | Destinatarios, separados por coma |
 
-pip install -r requirements.txt
+3. **Permisos de escritura:** Settings > Actions > General > Workflow permissions > Read and write permissions. Sin eso, el flujo no puede guardar el resumen semanal.
 
-export FRED_API_KEY="your-key"
-export ANTHROPIC_API_KEY="your-key"
+4. **Activa el flujo:** pestaña Actions > "Weekly Recession Probability Report".
 
-python automation/daily_report.py      # Fetch data, run model, generate charts
-python automation/generate_email.py    # Generate email via Claude API
+5. **Prueba:** pulsa "Run workflow" para lanzarlo en el momento. El cron corre cada lunes a las 14:00 UTC (9:00, hora de Colombia).
+
+Sin credenciales de Gmail, el informe queda como archivo HTML en los artefactos del flujo.
+
+En el plan gratuito de Groq el modelo no recibe las imágenes: cada gráfico cuenta como unos 2.000 tokens y el tope de entrada es 7.000. Qwen redacta a partir del JSON y los gráficos se incrustan después, en el correo.
+
+### Opción C: ejecución local
+
+En Windows, desde esta carpeta, con las claves en un archivo `.env` (no se sube a git):
+
+```powershell
+.\ejecutar_local.ps1
 ```
 
-Output files are written to `automation/output/`.
+O, paso a paso:
+
+```powershell
+pip install -r requirements.txt
+python automation/daily_report.py      # Descarga datos, estima y genera gráficos
+python automation/generate_email.py    # Redacta el correo con Groq y lo envía
+```
+
+Los archivos de salida quedan en `automation/output/`.
 
 ---
 
-## How It Works
+## Cómo funciona
 
-### The Probit Framework
+### El marco probit
 
-The core statistical model is a probit regression:
+El modelo estadístico central es una regresión probit:
 
-**P(Recession_{t+12} = 1 | X_t) = Phi(a_0 + a_1 * X_t)**
+**P(Recesión_{t+12} = 1 | X_t) = Phi(a_0 + a_1 * X_t)**
 
-where Phi(.) is the standard normal CDF, X_t is a vector of economic indicators observed at time t, and the forecast horizon is 12 months. The probit maps a linear combination of indicators into a probability bounded between 0 and 1, connecting naturally to latent-variable models where an unobserved "economic health" index crosses a threshold during recessions.
+Phi(.) es la función de distribución de la normal estándar, X_t es el vector de indicadores observados en t, y el horizonte es de 12 meses. El probit convierte una combinación lineal de indicadores en una probabilidad entre 0 y 1. Equivale a un modelo de variable latente: un índice no observado de "salud económica" cruza un umbral cuando hay recesión.
 
-### Five-Model Ensemble
+### Ensamble de cinco modelos
 
-Rather than relying on any single specification, the headline probability is an equal-weighted average of five methodologically distinct models:
+La probabilidad que se destaca no depende de una sola especificación. Es el promedio con pesos iguales de cinco modelos:
 
-| Model | Features | Methodology | Reference |
-|-------|----------|-------------|-----------|
-| **NY Fed Baseline** | Yield curve spread only | Re-estimated probit | Estrella & Mishkin (1998) |
-| **Wright Extension** | Spread + Federal Funds Rate | Re-estimated probit | Wright (2006) |
-| **BIC-Selected** | Data-driven optimal set | Re-estimated probit with sign constraints | Forward stepwise BIC |
-| **Estrella-Mishkin** | Yield curve spread | Closed-form with 2006 parameters | Estrella & Trubin (2006) |
-| **Chauvet-Piger** | Markov-switching model | Independent FRED series (RECPROUSM156N) | Chauvet & Piger |
+| Modelo | Variables | Metodología | Referencia |
+|--------|-----------|-------------|------------|
+| **Base NY Fed** | Solo el diferencial de la curva | Probit reestimado | Estrella y Mishkin (1998) |
+| **Extensión de Wright** | `SPREAD` + tasa de fondos federales | Probit reestimado | Wright (2006) |
+| **Seleccionado por BIC** | Conjunto óptimo según los datos | Probit reestimado con restricciones de signo | BIC hacia adelante |
+| **Estrella-Mishkin** | Diferencial de la curva | Forma cerrada con parámetros de 2006 | Estrella y Trubin (2006) |
+| **Chauvet-Piger** | Modelo de cambio de régimen | Serie independiente de FRED (`RECPROUSM156N`) | Chauvet y Piger |
 
-This diversifies across model complexity (1 variable to 7+), estimation approach (re-estimated vs. frozen parameters vs. Markov-switching), and the fundamental question of whether the yield curve alone is sufficient or multi-factor models add value.
+Así se diversifica la complejidad (de 1 variable a 7 o más), la forma de estimar (reestimar, dejar los parámetros fijos, o usar Markov-switching) y la pregunta de fondo: si la curva basta o si un modelo de varios factores aporta algo.
 
-### Feature Selection: BIC with Sign Constraints
+### Selección de variables: BIC con restricciones de signo
 
-Recessions are rare (~15% of months since 1967). With 30+ candidate features and only ~6 recession episodes in the sample, overfitting is the primary risk. The model uses forward stepwise BIC selection with three safeguards:
+Las recesiones son raras (cerca del 15 % de los meses desde 1967). Con más de 30 candidatas y apenas unos 6 episodios en la muestra, el riesgo principal es el sobreajuste. La selección es BIC hacia adelante, con tres controles:
 
-1. **BIC penalty**: Penalizes complexity more aggressively than AIC, enforcing the parsimony that Berge (2014) showed dominates at the 12-month horizon
-2. **Separation detection**: Rejects any feature combination that produces quasi-complete separation (coefficients > 100, nan standard errors, or pseudo R-squared > 0.99)
-3. **Economic sign constraints**: Ensures coefficients align with theory before accepting a candidate:
+1. **Penalización BIC.** Castiga la complejidad más que el AIC. Berge (2014) mostró que esa parsimonia domina en el horizonte de 12 meses.
+2. **Detección de separación.** Rechaza combinaciones con separación casi completa (coeficientes mayores que 100, errores estándar indefinidos o pseudo R² mayor que 0,99).
+3. **Restricciones de signo.** El coeficiente tiene que coincidir con la teoría antes de aceptar la variable:
 
-| Indicator | Required Sign | Economic Logic |
-|-----------|--------------|----------------|
-| SPREAD | Negative | Lower spread = higher recession risk |
-| UNRATE_CHG3 | Positive | Rising unemployment = higher recession risk |
-| UMCSENT | Negative | Lower sentiment = higher recession risk |
-| BUSLOANS_YOY | Negative | Credit contraction = higher recession risk |
+   | Indicador | Signo exigido | Lógica económica |
+   |-----------|---------------|------------------|
+   | SPREAD | Negativo | Menor diferencial, mayor riesgo de recesión |
+   | UNRATE_CHG3 | Positivo | Más desempleo, mayor riesgo de recesión |
+   | UMCSENT | Negativo | Peor sentimiento, mayor riesgo de recesión |
+   | BUSLOANS_YOY | Negativo | Contracción del crédito, mayor riesgo de recesión |
 
-If no valid combination passes all three checks, the model falls back to the Wright two-variable specification (spread + fed funds rate).
+Si ninguna combinación pasa los tres controles, el modelo vuelve a la especificación de Wright: diferencial más tasa de fondos federales.
 
-### Dependent Variable Construction
+### Construcción de la variable dependiente
 
-The dependent variable is configurable:
+Se puede configurar de dos maneras:
 
-- **Point-in-time** (`"point"`): y_t = 1 if in recession at month t+12. Used by the NY Fed.
-- **Any-in-window** (`"window"`): y_t = 1 if recession occurs at any point during months t+1 through t+12. Produces higher, more persistent probabilities.
+- **Puntual** (`"point"`): y_t = 1 si hay recesión en el mes t+12. Es la definición de la Fed de Nueva York.
+- **En la ventana** (`"window"`): y_t = 1 si hay recesión en cualquier mes entre t+1 y t+12. Da probabilidades más altas y más persistentes.
 
-The Boston Fed (2020) documented "considerable dispersion" between these approaches. The notebook compares both side-by-side.
+La Fed de Boston (2020) documentó una dispersión considerable entre las dos. El cuaderno las compara lado a lado.
 
-### Variable Transformations
+### Transformaciones
 
-Transforms are metadata-driven via the `SERIES_CONFIG` dictionary:
+Las transformaciones están en el diccionario `SERIES_CONFIG`:
 
-- **Year-over-year percent change** (`"yoy"`): For non-stationary level series (INDPRO, CPI, Housing Starts, Payrolls). Removes trend, preserves cyclical signal.
-- **Levels** (`"level"`): For stationary/bounded series (spreads, rates, normalized indexes).
-- **Derived features**: SPREAD (= GS10 - TB3MS) for pre-1982 monthly history; UNRATE_CHG3 for Sahm-style unemployment momentum.
+- **Variación porcentual interanual** (`"yoy"`): para series en nivel no estacionarias (INDPRO, precios, viviendas iniciadas, nóminas). Quita la tendencia y conserva el ciclo.
+- **Niveles** (`"level"`): para series estacionarias o acotadas (diferenciales, tasas, índices normalizados).
+- **Variables derivadas:** `SPREAD` (= GS10 − TB3MS), para tener historia mensual anterior a 1982; `UNRATE_CHG3`, el impulso del desempleo al estilo de la regla de Sahm.
 
-### Estimation: Expanding Windows
+### Estimación: ventana expansiva
 
-Uses expanding-window (not rolling) estimation because recessions are too rare for rolling windows to produce stable estimates. Minimum training window: 120 months (10 years). Each month's probability is generated from a model trained only on data available at that point — no lookahead bias.
+Se usa ventana expansiva, no móvil. Las recesiones son demasiado escasas para que una ventana móvil dé estimaciones estables. El mínimo de entrenamiento es 120 meses (10 años). La probabilidad de cada mes sale de un modelo entrenado solo con la información disponible en ese momento: no hay sesgo de mirada al futuro.
 
-### Robustness Checks
+### Controles de robustez
 
-The notebook includes five robustness checks:
+El cuaderno incluye cinco controles:
 
-1. **Bootstrap 90% CI** — 1,000 resamples to quantify uncertainty around the point estimate
-2. **Leave-one-recession-out** — Trains on all recessions except one, tests detection on the held-out episode
-3. **Penalized probit** — L2-regularized logistic regression to verify quasi-separation isn't distorting estimates
-4. **Model consensus** — Measures agreement across all five specifications
-5. **Sensitivity triggers** — Binary search for the exact indicator value that would push probability to 30% or 50%
+1. **Intervalo bootstrap al 90 %.** 1.000 remuestreos para cuantificar la incertidumbre del estimador puntual.
+2. **Dejar fuera una recesión.** Entrena con todas menos una y comprueba si detecta el episodio excluido.
+3. **Probit penalizado.** Regresión logística con regularización L2, para ver si la cuasi-separación distorsiona las estimaciones.
+4. **Consenso entre modelos.** Mide el acuerdo de las cinco especificaciones.
+5. **Umbrales de sensibilidad.** Búsqueda binaria del valor exacto de cada indicador que llevaría la probabilidad al 30 % o al 50 %.
 
-### Trend Attribution
+### Atribución de la tendencia
 
-The weekly report decomposes the 24-month probability change into per-indicator contributions using partial effects (coefficient x change in variable x normal PDF at the current linear index). This identifies which indicators are driving the probability up or down.
-
----
-
-## Data Universe — 37 FRED Series Across 8 Categories
-
-| Category | Series | Transform |
-|----------|--------|-----------|
-| **National Activity** | CFNAI, CFNAIMA3, GDPC1, USSLIND | Level / YoY |
-| **Industrial** | INDPRO, BSCICP02USM460S (OECD Mfg Confidence), TCU, DGORDER, IPMAN | YoY / Level |
-| **Consumer** | UMCSENT, PCECC96, DSPIC96, RSAFS | Level / YoY |
-| **Labor Market** | UNRATE, ICSA, PAYEMS, JTSJOL | Level / YoY |
-| **Inflation** | CPIAUCSL, PCEPILFE, PCEPI, CPILFESL, PPIACO | YoY |
-| **Housing** | HOUST, PERMIT, HSN1F, CSUSHPISA | YoY |
-| **Banking/Credit** | BAA10YM, BUSLOANS, DRALACBS, DRTSCILM | Level / YoY |
-| **Yields** | T10Y3M, T10Y2Y, GS10, TB3MS, FEDFUNDS | Level |
-
-Non-monthly series are resampled: weekly (ICSA) to monthly mean, daily (T10Y3M, T10Y2Y) to month-end, quarterly (GDPC1, DRALACBS, DRTSCILM) forward-filled to monthly. Features with less than 80% coverage of the target period are excluded to prevent short-history series from shrinking the sample.
+El informe semanal descompone el cambio de probabilidad a 24 meses en el aporte de cada indicador. El efecto parcial es el coeficiente por el cambio de la variable por la densidad normal en el índice lineal actual. Así se ve qué indicador está empujando la probabilidad hacia arriba o hacia abajo.
 
 ---
 
-## Weekly Email Report
+## Universo de datos — 37 series de FRED en 8 categorías
 
-The automated email includes:
+| Categoría | Series | Transformación |
+|-----------|--------|----------------|
+| **Actividad nacional** | CFNAI, CFNAIMA3, GDPC1, USSLIND | Nivel / interanual |
+| **Industria** | INDPRO, BSCICP02USM460S (confianza manufacturera OCDE), TCU, DGORDER, IPMAN | Interanual / nivel |
+| **Consumo** | UMCSENT, PCECC96, DSPIC96, RSAFS | Nivel / interanual |
+| **Mercado laboral** | UNRATE, ICSA, PAYEMS, JTSJOL | Nivel / interanual |
+| **Inflación** | CPIAUCSL, PCEPILFE, PCEPI, CPILFESL, PPIACO | Interanual |
+| **Vivienda** | HOUST, PERMIT, HSN1F, CSUSHPISA | Interanual |
+| **Banca y crédito** | BAA10YM, BUSLOANS, DRALACBS, DRTSCILM | Nivel / interanual |
+| **Rendimientos** | T10Y3M, T10Y2Y, GS10, TB3MS, FEDFUNDS | Nivel |
 
-| Section | Content |
-|---------|---------|
-| **IC Summary** | Snapshot table (probability, direction, risk driver, offset), model range, portfolio positioning (equities, fixed income, credit, hedging) |
-| **Executive Summary** | Ensemble headline, model consensus, divergence framing |
-| **Key Indicators** | Four macro buckets (Growth, Inflation, Policy, Market Signals) — two sentences each |
-| **Model Divergence** | Structured yield curve analysis: historical track record, three structural factors (QE, foreign CB demand, Basel III), judgment call |
-| **Watchlist** | Trigger levels: exact values each indicator needs to reach for 30%/50% probability, ranked by proximity |
-| **Adverse Scenario** | Tail risk classification, three real-world triggers, hedging framework tied to ensemble level |
-| **What Would Change Our View** | Five hardcoded thresholds (spread < -1%, core CPI < 1.5%, housing -15% YoY, claims > 300K, ensemble > 20%) |
-| **Data Currency Notice** | Data-through date and lagged series disclosure |
-
-Seven charts embedded inline: probability gauge, ensemble trend, indicator percentile dashboard, model comparison, indicator sparklines, full historical probability, and sensitivity trigger levels.
+Las series que no son mensuales se reagrupan: la semanal (ICSA) al promedio mensual, las diarias (T10Y3M, T10Y2Y) al cierre de mes, y las trimestrales (GDPC1, DRALACBS, DRTSCILM) se rellenan hacia adelante hasta quedar mensuales. Si una variable cubre menos del 80 % del periodo objetivo, se excluye, para que una serie corta no encoja toda la muestra.
 
 ---
 
-## Configuration
+## Correo semanal
 
-All modeling choices are set in a single configuration block:
+El correo automático incluye:
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `TARGET_DEFINITION` | `"point"` | `"point"` = recession at month t+12; `"window"` = any recession in months t+1 through t+12 |
-| `OBS_START` | `"1967-01-01"` | Observation start date |
-| `MIN_WINDOW` | `120` | Minimum expanding-window training size (months) |
-| `MAX_FEATURES_BIC` | `9` | Maximum features for BIC selection |
-| `THRESHOLD_WARNING` | `30` | Warning probability level (%) |
-| `THRESHOLD_ELEVATED` | `50` | Elevated probability level (%) |
+| Sección | Contenido |
+|---------|-----------|
+| **Resumen para el comité** | Tabla (probabilidad, dirección, factor de riesgo, factor de alivio), rango de modelos y posicionamiento (renta variable, renta fija, crédito, coberturas) |
+| **Resumen ejecutivo** | Cifra del ensamble, consenso y encuadre de la divergencia |
+| **Indicadores clave** | Cuatro bloques (crecimiento, inflación, política, señales de mercado), dos frases cada uno |
+| **Divergencia entre modelos** | Lectura de la curva: historial, tres factores estructurales (QE, demanda externa de Treasuries, Basilea III) y el juicio |
+| **Lista de seguimiento** | Umbrales: el valor que cada indicador tendría que alcanzar para una probabilidad del 30 % o del 50 %, ordenados por cercanía |
+| **Escenario adverso** | Clasificación de riesgo de cola, tres disparadores reales y coberturas según el nivel del ensamble |
+| **Qué cambiaría la lectura** | Cinco umbrales fijos (`SPREAD` < −1 %, inflación subyacente < 1,5 %, vivienda −15 % interanual, solicitudes > 300.000, ensamble > 20 %) |
+| **Vigencia de los datos** | Fecha de corte y series con rezago de publicación |
+
+Siete gráficos incrustados: medidor de probabilidad, tendencia del ensamble, percentil de los indicadores, comparación de modelos, trayectorias, historia completa y umbrales de sensibilidad.
 
 ---
 
-## Project Structure
+## Configuración
+
+Todas las decisiones de modelado están en un solo bloque:
+
+| Parámetro | Valor por defecto | Descripción |
+|-----------|-------------------|-------------|
+| `TARGET_DEFINITION` | `"point"` | `"point"` = recesión en el mes t+12; `"window"` = cualquier recesión entre t+1 y t+12 |
+| `OBS_START` | `"1967-01-01"` | Fecha de inicio de la muestra |
+| `MIN_WINDOW` | `120` | Tamaño mínimo de la ventana expansiva, en meses |
+| `MAX_FEATURES_BIC` | `9` | Máximo de variables en la selección BIC |
+| `THRESHOLD_WARNING` | `30` | Umbral de alerta (%) |
+| `THRESHOLD_ELEVATED` | `50` | Umbral elevado (%) |
+
+---
+
+## Estructura del proyecto
 
 ```
 Recession_Probability_Model/
-├── Recession_Probability_Model.ipynb   # Interactive notebook (Google Colab)
+├── Recession_Probability_Model.ipynb   # Cuaderno interactivo (Google Colab)
 ├── automation/
-│   ├── daily_report.py                 # Model run, charts, summary JSON
-│   ├── generate_email.py              # Claude API email composition + Gmail delivery
-│   └── output/                        # Generated charts, summaries, emails
+│   ├── daily_report.py                 # Estimación, gráficos y JSON de resumen
+│   ├── generate_email.py              # Redacción con Groq y envío por Gmail
+│   └── output/                        # Gráficos, resúmenes y correos generados
 ├── .github/workflows/
-│   └── daily_recession_report.yml     # GitHub Actions weekly schedule
+│   └── daily_recession_report.yml     # Programación semanal en GitHub Actions
+├── ejecutar_local.ps1                 # Corrida local en Windows
 ├── requirements.txt
 ├── .gitignore
 ├── LICENSE                            # MIT
@@ -223,100 +228,103 @@ Recession_Probability_Model/
 
 ---
 
-## Dependencies
+## Dependencias
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `fredapi` | >= 0.5.0 | FRED API data access |
-| `statsmodels` | >= 0.14 | Probit regression, marginal effects, summary statistics |
-| `scikit-learn` | >= 1.3 | AUROC and Brier Score evaluation |
-| `matplotlib` | >= 3.7 | Charts and visualizations |
-| `pandas` | >= 2.0 | Data manipulation and time series alignment |
-| `numpy` | >= 1.24 | Numerical operations |
-| `scipy` | >= 1.10 | Normal CDF/PDF for probit predictions |
-| `anthropic` | >= 0.40 | Claude API for email narrative generation |
+| Paquete | Versión | Para qué sirve |
+|---------|---------|----------------|
+| `fredapi` | >= 0.5.0 | Acceso a los datos de FRED |
+| `statsmodels` | >= 0.14 | Regresión probit, efectos marginales y resúmenes |
+| `scikit-learn` | >= 1.3 | Evaluación con AUROC y puntuación de Brier |
+| `matplotlib` | >= 3.7 | Gráficos |
+| `pandas` | >= 2.0 | Manipulación de datos y alineación de series |
+| `numpy` | >= 1.24 | Operaciones numéricas |
+| `scipy` | >= 1.10 | Distribución y densidad normal del probit |
+| `groq` | >= 0.30 | API de Groq para redactar el correo |
 
-Install all: `pip install -r requirements.txt`
-
----
-
-## Evaluation Metrics
-
-| Metric | What It Measures |
-|--------|-----------------|
-| **AUROC** | Discrimination ability (1.0 = perfect, 0.5 = random) |
-| **Brier Score** | Mean squared probability error (lower = better) |
-| **Pseudo R-squared** | Variance explained vs. intercept-only model |
-| **AIC** | Fit-complexity tradeoff (lighter penalty) |
-| **BIC** | Fit-complexity tradeoff (heavier penalty — primary selection criterion) |
+Instalación: `pip install -r requirements.txt`
 
 ---
 
-## Known Limitations
+## Métricas de evaluación
 
-- Trained on ~6 independent recession episodes — limited sample for generalization
-- Assumes future recessions resemble historical patterns — novel mechanisms (pandemics, geopolitical shocks) may not be captured
-- 12-month horizon is long — conditions can change materially within the window
-- FRED data has publication lags (1-3 months) — the latest reading may reflect conditions from 1-2 months ago
-- The model assigns a negative coefficient to inflation, reflecting demand-collapse recessions — this may understate stagflation risk where inflation and growth weakness occur simultaneously
-- Feature selection (BIC) is in-sample — the optimal feature set may differ in future regimes
-- The model should be one input among many — not a sole basis for allocation decisions
-
----
-
-## References
-
-1. **Estrella, A. & Mishkin, F.S. (1998)**. "Predicting U.S. Recessions: Financial Variables as Leading Indicators." *Review of Economics and Statistics*, 80(1), 45-61.
-
-2. **Wright, J.H. (2006)**. "The Yield Curve and Predicting Recessions." *Federal Reserve Board FEDS Working Paper* No. 2006-07.
-
-3. **Kauppi, H. & Saikkonen, P. (2008)**. "Predicting U.S. Recessions with Dynamic Binary Response Models." *Review of Economics and Statistics*, 90(4), 777-791.
-
-4. **Berge, T.J. (2014)**. "Predicting Recessions with Leading Indicators: Model Averaging and Links to the Financial Crisis." *Federal Reserve Bank of Kansas City Working Paper*.
-
-5. **Berge, T.J. & Jorda, O. (2011)**. "Evaluating the Classification of Economic Activity into Recessions and Expansions." *American Economic Journal: Macroeconomics*.
-
-6. **Federal Reserve Board FEDS Notes (2018, 2019)**. Comparative evaluation of six probit recession models.
-
-7. **Boston Fed (2020)**. On dispersion in predicted recession probabilities from dependent variable construction choices.
-
-8. **McCracken, M.W. & Ng, S. (2016)**. "FRED-MD: A Monthly Database for Macroeconomic Research." *Journal of Business & Economic Statistics*, 34(4), 574-589.
-
-9. **Sahm, C. (2019)**. "Direct Stimulus Payments to Individuals." *Brookings Institution*. — Introduced the Sahm Rule.
-
-10. **Bellego, C. & Ferrara, L. (2009)**. "Forecasting Euro Area Recessions Using Time-Varying Binary Response Models for Financial Variables." *ECB Working Paper*.
+| Métrica | Qué mide |
+|---------|----------|
+| **AUROC** | Capacidad de discriminar (1,0 = perfecta, 0,5 = azar) |
+| **Puntuación de Brier** | Error cuadrático medio de la probabilidad (más bajo, mejor) |
+| **Pseudo R²** | Varianza explicada frente a un modelo de solo intercepto |
+| **AIC** | Equilibrio entre ajuste y complejidad (penalización leve) |
+| **BIC** | El mismo equilibrio con penalización más fuerte. Es el criterio de selección |
 
 ---
 
-## Contributing
+## Limitaciones conocidas
 
-Contributions are welcome. If you'd like to extend the model:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Make your changes and test locally with `python automation/daily_report.py`
-4. Submit a pull request with a clear description of what changed and why
-
-Areas where contributions would be particularly valuable:
-- Additional model specifications (dynamic probit, Bayesian Model Averaging)
-- Alternative data sources beyond FRED
-- International recession models (EU, UK, Japan)
-- Dashboard/web UI for the weekly report
+- Está entrenado con unos 6 episodios de recesión independientes. La muestra es corta para generalizar.
+- Supone que las recesiones futuras se parecerán a las pasadas. Mecanismos nuevos (pandemias, shocks geopolíticos) pueden quedar fuera.
+- El horizonte de 12 meses es largo. Dentro de esa ventana las condiciones pueden cambiar de forma material.
+- FRED publica con rezago (1 a 3 meses). La última lectura puede describir la situación de hace uno o dos meses.
+- El modelo asigna un coeficiente negativo a la inflación, propio de las recesiones por colapso de la demanda. Puede subestimar el riesgo de estanflación, cuando la inflación y la debilidad del crecimiento coinciden.
+- La selección BIC es dentro de muestra. El conjunto óptimo puede ser otro en un régimen futuro.
+- El modelo es un insumo entre varios. No es base única para decidir una asignación de cartera.
 
 ---
 
-## Disclaimer
+## Referencias
 
-This project is for **educational and research purposes only**. It is not financial advice, investment advice, or a recommendation to buy, sell, or hold any security or financial instrument. The model output should not be used as the sole basis for any investment decision. Past recession-prediction accuracy does not guarantee future performance. Economic models are inherently uncertain and can fail without warning, particularly during novel economic conditions. The authors assume no liability for any financial losses incurred from the use of this model. Consult a qualified financial advisor before making investment decisions.
+Los títulos se dejan en el idioma de publicación.
+
+1. **Estrella, A. y Mishkin, F.S. (1998).** "Predicting U.S. Recessions: Financial Variables as Leading Indicators." *Review of Economics and Statistics*, 80(1), 45-61.
+
+2. **Wright, J.H. (2006).** "The Yield Curve and Predicting Recessions." *Federal Reserve Board FEDS Working Paper* n.º 2006-07.
+
+3. **Kauppi, H. y Saikkonen, P. (2008).** "Predicting U.S. Recessions with Dynamic Binary Response Models." *Review of Economics and Statistics*, 90(4), 777-791.
+
+4. **Berge, T.J. (2014).** "Predicting Recessions with Leading Indicators: Model Averaging and Links to the Financial Crisis." Documento de trabajo del Federal Reserve Bank of Kansas City.
+
+5. **Berge, T.J. y Jordà, Ò. (2011).** "Evaluating the Classification of Economic Activity into Recessions and Expansions." *American Economic Journal: Macroeconomics*.
+
+6. **Federal Reserve Board, FEDS Notes (2018, 2019).** Evaluación comparada de seis modelos probit de recesión.
+
+7. **Fed de Boston (2020).** Sobre la dispersión de las probabilidades de recesión según cómo se construya la variable dependiente.
+
+8. **McCracken, M.W. y Ng, S. (2016).** "FRED-MD: A Monthly Database for Macroeconomic Research." *Journal of Business & Economic Statistics*, 34(4), 574-589.
+
+9. **Sahm, C. (2019).** "Direct Stimulus Payments to Individuals." *Brookings Institution*. Presenta la regla de Sahm.
+
+10. **Bellego, C. y Ferrara, L. (2009).** "Forecasting Euro Area Recessions Using Time-Varying Binary Response Models for Financial Variables." Documento de trabajo del BCE.
 
 ---
 
-## License
+## Cómo contribuir
 
-MIT License. See [LICENSE](LICENSE) for details.
+Las contribuciones son bienvenidas. Para extender el modelo:
+
+1. Haz un fork del repositorio.
+2. Crea una rama (`git checkout -b feature/tu-cambio`).
+3. Modifica y prueba en local con `python automation/daily_report.py`.
+4. Abre un pull request que diga qué cambió y por qué.
+
+Aportes especialmente útiles:
+
+- Especificaciones adicionales (probit dinámico, promedio bayesiano de modelos).
+- Fuentes de datos distintas de FRED.
+- Modelos de recesión para otras economías (zona euro, Reino Unido, Japón).
+- Un tablero web para el informe semanal.
 
 ---
 
-## Suggested Repository Topics
+## Aviso
 
-`recession` `macroeconomics` `probit` `yield-curve` `fred-api` `economic-forecasting` `recession-probability` `nber` `time-series` `python` `statsmodels` `claude-api` `github-actions`
+Este proyecto es solo para **estudio e investigación**. No es asesoría financiera, ni de inversión, ni una recomendación de comprar, vender o mantener ningún valor o instrumento. La salida del modelo no debe ser la única base de una decisión de inversión. Que haya anticipado recesiones en el pasado no garantiza que lo haga en el futuro. Los modelos económicos son inciertos y pueden fallar sin aviso, sobre todo en situaciones nuevas. Quienes mantienen el código no asumen responsabilidad por pérdidas derivadas de su uso. Antes de decidir, consulta a un asesor financiero calificado.
+
+---
+
+## Licencia
+
+Licencia MIT. El detalle está en [LICENSE](LICENSE).
+
+---
+
+## Temas sugeridos para el repositorio
+
+`recession` `macroeconomics` `probit` `yield-curve` `fred-api` `economic-forecasting` `recession-probability` `nber` `time-series` `python` `statsmodels` `groq` `github-actions`
