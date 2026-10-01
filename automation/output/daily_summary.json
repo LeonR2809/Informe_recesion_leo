@@ -33,39 +33,39 @@
   "indicator_readings": {
     "SPREAD": {
       "value": 0.71,
-      "category": "Yields (derived)",
+      "category": "Rendimientos (derivada)",
       "percentile": 28.0
     },
     "HSN1F_YOY": {
       "value": -8.5592,
-      "category": "Housing",
+      "category": "Vivienda",
       "percentile": 27.0
     },
     "FEDFUNDS": {
       "value": 3.64,
-      "category": "Yields",
+      "category": "Rendimientos",
       "percentile": 43.0
     },
     "CPILFESL_YOY": {
       "value": 2.7433,
-      "category": "Inflation",
+      "category": "Inflaci\u00f3n",
       "percentile": 52.0
     },
     "PPIACO_YOY": {
       "value": 9.4159,
-      "category": "Inflation",
+      "category": "Inflaci\u00f3n",
       "percentile": 88.0
     },
     "HOUST_YOY": {
       "value": 1.0,
-      "category": "Housing",
+      "category": "Vivienda",
       "percentile": 49.0
     }
   },
   "sensitivity": [
     {
       "feature": "SPREAD",
-      "category": "Yields (derived)",
+      "category": "Rendimientos (derivada)",
       "current_value": 0.7100000000000004,
       "std_dev": 1.3126417675754602,
       "prob_minus_1sd": 28.97457415465422,
@@ -78,12 +78,12 @@
     },
     {
       "feature": "HSN1F_YOY",
-      "category": "Housing",
+      "category": "Vivienda",
       "current_value": -8.559201141226824,
       "std_dev": 19.412993193889427,
       "prob_minus_1sd": 16.063204638034517,
-      "prob_plus_1sd": 15.379182046432193,
-      "impact_pp": -0.6840225916023233,
+      "prob_plus_1sd": 15.379182046432188,
+      "impact_pp": -0.6840225916023286,
       "trigger_30pct": null,
       "distance_30pct": null,
       "trigger_50pct": null,
@@ -91,10 +91,10 @@
     },
     {
       "feature": "FEDFUNDS",
-      "category": "Yields",
+      "category": "Rendimientos",
       "current_value": 3.64,
       "std_dev": 3.9831099301271338,
-      "prob_minus_1sd": 2.258672876517862,
+      "prob_minus_1sd": 2.25867287651786,
       "prob_plus_1sd": 49.635640692113626,
       "impact_pp": 47.37696781559576,
       "trigger_30pct": 5.56,
@@ -104,12 +104,12 @@
     },
     {
       "feature": "CPILFESL_YOY",
-      "category": "Inflation",
+      "category": "Inflaci\u00f3n",
       "current_value": 2.7433094309685213,
       "std_dev": 2.4379259559349213,
-      "prob_minus_1sd": 42.38707365595894,
+      "prob_minus_1sd": 42.387073655958936,
       "prob_plus_1sd": 3.436671095085539,
-      "impact_pp": -38.95040256087341,
+      "impact_pp": -38.9504025608734,
       "trigger_30pct": 1.3,
       "distance_30pct": -1.44,
       "trigger_50pct": -0.27,
@@ -117,11 +117,11 @@
     },
     {
       "feature": "PPIACO_YOY",
-      "category": "Inflation",
+      "category": "Inflaci\u00f3n",
       "current_value": 9.415926189665313,
       "std_dev": 5.80715849334264,
-      "prob_minus_1sd": 4.274251475157852,
-      "prob_plus_1sd": 38.49681632429912,
+      "prob_minus_1sd": 4.274251475157846,
+      "prob_plus_1sd": 38.49681632429911,
       "impact_pp": 34.222564849141264,
       "trigger_30pct": 13.34,
       "distance_30pct": 3.92,
@@ -130,12 +130,12 @@
     },
     {
       "feature": "HOUST_YOY",
-      "category": "Housing",
+      "category": "Vivienda",
       "current_value": 1.0000000000000009,
       "std_dev": 20.31076480263353,
-      "prob_minus_1sd": 34.48518347070466,
-      "prob_plus_1sd": 5.338184522900146,
-      "impact_pp": -29.146998947804516,
+      "prob_minus_1sd": 34.48518347070465,
+      "prob_plus_1sd": 5.338184522900145,
+      "impact_pp": -29.146998947804505,
       "trigger_30pct": -15.12,
       "distance_30pct": -16.12,
       "trigger_50pct": -32.67,
