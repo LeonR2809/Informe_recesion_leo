@@ -24,6 +24,24 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+
+def _cargar_env():
+    """Lee el .env de la raíz del repo sin pisar variables ya definidas."""
+    ruta = Path(__file__).resolve().parents[1] / ".env"
+    if not ruta.exists():
+        return
+    for linea in ruta.read_text(encoding="utf-8").splitlines():
+        texto = linea.strip()
+        if not texto or texto.startswith("#") or "=" not in texto:
+            continue
+        clave, valor = texto.split("=", 1)
+        clave, valor = clave.strip(), valor.strip().strip('"')
+        if valor and clave not in os.environ:
+            os.environ[clave] = valor
+
+
+_cargar_env()
+
 import numpy as np
 import pandas as pd
 import matplotlib

@@ -1,19 +1,19 @@
 """
-Claude API Email Generator for Recession Probability Report
+Genera el correo del reporte de probabilidad de recesión con Groq.
 
-Reads the daily_summary.json from the daily report pipeline, sends it
-to Claude for analysis, and generates an HTML email with embedded chart
-references. Optionally sends via SendGrid.
+Lee daily_summary.json, se lo pasa a Qwen 3.8 27B (con hasta 3 gráficos,
+que es el máximo de imágenes por consulta de ese modelo) y arma el HTML.
+El envío por Gmail es opcional.
 
-Usage:
+Uso:
     python automation/generate_email.py
 
-Required environment variables:
-    ANTHROPIC_API_KEY - Claude API key
-    MAIL_USERNAME     - Gmail address (optional, for sending)
-    MAIL_PASSWORD     - Gmail app password (optional, for sending)
-    MAIL_PORT         - SMTP port, typically 587 (optional)
-    EMAIL_TO          - Recipient email address(es), comma-separated
+Variables de entorno (también se leen de ../.env):
+    GROQ_API_KEY   - clave de console.groq.com
+    MAIL_USERNAME  - Gmail (opcional, para enviar)
+    MAIL_PASSWORD  - contraseña de aplicación de Gmail (opcional)
+    MAIL_PORT      - puerto SMTP, normalmente 587
+    EMAIL_TO       - destinatarios, separados por coma
 """
 
 import os
@@ -23,9 +23,32 @@ import base64
 from datetime import datetime
 from pathlib import Path
 
-import anthropic
+from groq import Groq
 
 OUTPUT_DIR = Path(__file__).parent / "output"
+MODELO = "qwen/qwen3.8-27b"
+# El plan gratuito de Groq admite 7 000 tokens de entrada por minuto y cada
+# imagen cuenta como 2 048. El JSON del reporte ya se acerca a ese tope,
+# así que los gráficos no se envían al modelo: se incrustan después en el correo.
+MAX_IMAGENES = 0
+
+
+def cargar_env():
+    """Carga el .env de la raíz del repo sin pisar variables ya definidas."""
+    ruta = Path(__file__).resolve().parents[1] / ".env"
+    if not ruta.exists():
+        return
+    for linea in ruta.read_text(encoding="utf-8").splitlines():
+        texto = linea.strip()
+        if not texto or texto.startswith("#") or "=" not in texto:
+            continue
+        clave, valor = texto.split("=", 1)
+        clave, valor = clave.strip(), valor.strip().strip('"')
+        if valor and clave not in os.environ:
+            os.environ[clave] = valor
+
+
+cargar_env()
 
 
 def load_summary():
@@ -45,8 +68,8 @@ def encode_image(path):
 
 
 def generate_analysis(summary):
-    """Send summary + charts to Claude for analysis and email generation."""
-    client = anthropic.Anthropic()
+    """Envía el resumen y hasta 3 gráficos a Qwen para redactar el correo."""
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
     # Build the prompt
     run_date = summary.get("run_date", datetime.now().strftime("%Y-%m-%d"))
@@ -240,34 +263,32 @@ Return your response as JSON with two keys:
 - "html_body": the full HTML email body
 """
 
-    # Load chart images for Claude to reference
+    # Qwen acepta como máximo 3 imágenes por consulta. El JSON ya trae
+    # todos los números, así que el resto de los gráficos solo se incrusta
+    # después, en el correo.
     content = [{"type": "text", "text": prompt}]
+    disponibles = [n for n in summary.get("charts", []) if (OUTPUT_DIR / n).exists()]
+    for chart_name in disponibles[:MAX_IMAGENES]:
+        img_data = encode_image(OUTPUT_DIR / chart_name)
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:image/png;base64,{img_data}"},
+        })
+        content.append({
+            "type": "text",
+            "text": f"[Above image: {chart_name}]",
+        })
+    if len(disponibles) > MAX_IMAGENES:
+        print(f"Se envían {MAX_IMAGENES} de {len(disponibles)} gráficos al modelo.")
 
-    # Add charts if they exist
-    for chart_name in summary.get("charts", []):
-        chart_path = OUTPUT_DIR / chart_name
-        if chart_path.exists():
-            img_data = encode_image(chart_path)
-            content.append({
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": "image/png",
-                    "data": img_data,
-                },
-            })
-            content.append({
-                "type": "text",
-                "text": f"[Above image: {chart_name}]",
-            })
-
-    print("Sending to Claude API for analysis...")
+    print(f"Sending to Groq ({MODELO}) for analysis...")
     response = None
     for attempt in range(4):
         try:
-            response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=8192,
+            response = client.chat.completions.create(
+                model=MODELO,
+                max_completion_tokens=8192,
+                response_format={"type": "json_object"},
                 messages=[{"role": "user", "content": content}],
             )
             break
@@ -282,7 +303,7 @@ Return your response as JSON with two keys:
                 raise
 
     # Parse response
-    response_text = response.content[0].text
+    response_text = response.choices[0].message.content or ""
 
     # Try to extract JSON from the response
     try:
@@ -406,12 +427,12 @@ def save_email_to_file(subject, html_body):
 
 def run():
     """Main pipeline."""
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        print("ERROR: ANTHROPIC_API_KEY environment variable not set")
+        print("ERROR: GROQ_API_KEY environment variable not set")
         sys.exit(1)
 
-    print("=== Generating Email Report via Claude API ===\n")
+    print(f"=== Generating Email Report via Groq ({MODELO}) ===\n")
 
     summary = load_summary()
     print(f"Loaded summary: {summary['run_date']}, prob={summary['bic_probability']}%")
