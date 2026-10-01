@@ -75,192 +75,200 @@ def generate_analysis(summary):
     run_date = summary.get("run_date", datetime.now().strftime("%Y-%m-%d"))
     data_date = summary.get("data_through", "unknown")
 
-    prompt = f"""You are a senior macro strategist writing a weekly recession probability
-briefing for an investment committee.
+    prompt = f"""Eres un estratega macro senior. Redacta en español un informe semanal
+de probabilidad de recesión para un comité de inversión.
 
-TODAY'S DATE: {run_date}
-DATA THROUGH: {data_date}
+FECHA DE HOY: {run_date}
+DATOS HASTA: {data_date}
 
-IMPORTANT FORMATTING: Include a visible "Data Through: {data_date}" line at the very top
-of the email body, immediately below the report title and date. This tells the reader how
-current the underlying data is. Format it prominently — not buried in fine print.
+REGLA DE IDIOMA: todo el texto visible va en español. Los códigos de variable
+se escriben exactamente como vienen en el JSON. No los traduzcas ni los sustituyas
+por un nombre largo. Ejemplos que deben quedar literales: SPREAD, FEDFUNDS,
+HSN1F_YOY, CPILFESL_YOY, PPIACO_YOY, HOUST_YOY, UNRATE_CHG3. Los nombres de
+modelos sí se escriben en español: «NY Fed (solo SPREAD)», «Wright (SPREAD + FF)»,
+«Seleccionado por BIC», «Estrella-Mishkin» y «Chauvet-Piger».
 
-IMPORTANT: All references to time must be grounded in today's date ({run_date}).
-Do not reference future months that haven't happened yet. When discussing what to
-watch, reference the NEXT data releases relative to {run_date} (e.g. if today is
-April 2026, the next jobs report is in May 2026, not November).
+FORMATO: debajo del título y de la fecha, pon en un lugar visible la línea
+«Datos hasta: {data_date}». No la escondas en letra pequeña.
 
-Based on the model output and attached charts below,
-write a substantive, visually-integrated email briefing.
+Toda referencia temporal se ancla a la fecha de hoy ({run_date}). No menciones
+meses que todavía no han ocurrido. Lo que haya que vigilar se refiere a la
+próxima publicación de datos respecto de {run_date}.
 
-You have 7 charts available. Reference them in your HTML using <img src="cid:chart_0">
-through <img src="cid:chart_6"> tags. The chart order is:
-- cid:chart_0 = Probability gauge (current reading)
-- cid:chart_1 = Probability trend (24-month trailing, is risk rising or falling?)
-- cid:chart_2 = Indicator percentile dashboard (where each indicator sits historically)
-- cid:chart_3 = Model comparison (do all specifications agree?)
-- cid:chart_4 = Indicator sparklines (24-month trailing trends for each feature)
-- cid:chart_5 = Historical probability (full history with NBER recession shading)
-- cid:chart_6 = Sensitivity analysis (which indicators move the needle most)
+Con la salida del modelo, redacta un informe sustantivo, con los gráficos
+integrados en el texto.
 
-IMPORTANT: Embed these charts INLINE within the relevant sections of your email using
-img tags with the cid: references above. Do NOT group all charts at the top or bottom.
-Place each chart immediately after the section it illustrates. Add a brief caption
-below each chart in small gray text.
+Hay 7 gráficos. Referéncialos en el HTML con <img src="cid:chart_0"> hasta
+<img src="cid:chart_6">. El orden es:
+- cid:chart_0 = medidor de la probabilidad actual
+- cid:chart_1 = tendencia a 24 meses
+- cid:chart_2 = percentil histórico de cada indicador
+- cid:chart_3 = comparación de modelos
+- cid:chart_4 = trayectoria de cada indicador, 24 meses
+- cid:chart_5 = historia completa, con sombras de recesión NBER
+- cid:chart_6 = sensibilidad y umbrales
 
-MODEL OUTPUT:
+Inserta cada gráfico dentro de la sección que ilustra, justo después del
+párrafo correspondiente. No los agrupes al principio ni al final. Debajo de
+cada uno, un pie de foto breve en gris y en español.
+
+SALIDA DEL MODELO:
 {json.dumps(summary, indent=2)}
 
-Write the email with these sections:
-1. **Subject line** — one line. Format: "Recession Probability: [ensemble]% — Models range
-   [low]% to [high]%". Do NOT include traffic-light labels (LOW/MODERATE/HIGH) in the subject
-   or anywhere in the narrative text. The color-banded gauge chart handles visual classification.
+Escribe el correo con estas secciones:
+1. **Asunto**, una línea, con este formato: «Probabilidad de recesión: [ensamble]% —
+   los modelos van de [mín]% a [máx]%». No uses etiquetas de semáforo
+   (LOW, MODERATE, HIGH, bajo, moderado, alto) ni en el asunto ni en el texto.
+   El medidor de colores ya clasifica visualmente.
 
-2. **Investment Committee Summary** — This is the FIRST content section, immediately after the
-   Data Through header. It must fit on one page and contain exactly these blocks in order:
+2. **Resumen para el comité.** Es la primera sección, justo después de
+   «Datos hasta». Cabe en una página y lleva estos bloques, en este orden:
 
-   SNAPSHOT TABLE (4 rows, formatted as an HTML table):
-   | Current Probability | [ensemble]% |
-   | Direction of Change | [rising/falling/stable based on trend data] |
-   | Primary Risk Driver | [the indicator closest to its warning trigger] |
-   | Primary Offset      | [the indicator most strongly supporting expansion] |
+   TABLA (4 filas, en HTML). Los rótulos van en español:
+   | Probabilidad actual | [ensamble]% |
+   | Dirección del cambio | [al alza / a la baja / estable, según la tendencia] |
+   | Principal factor de riesgo | [el indicador más cerca de su umbral de alerta; conserva su código] |
+   | Principal factor de alivio | [el indicador que más sostiene la expansión; conserva su código] |
 
-   MODEL RANGE (one sentence): "Individual models range from [low]% to [high]%, reflecting
-   meaningful disagreement on yield curve interpretation."
+   RANGO DE MODELOS, una frase: «Los modelos individuales van de [mín]% a [máx]%,
+   lo que refleja un desacuerdo relevante sobre la lectura de la curva de rendimientos.»
 
-   PORTFOLIO POSITIONING (bullet format, exactly 4 bullets):
-   - Equities: [stance] — [one-sentence rationale using "consistent with" framing]
-   - Fixed Income: [stance] — [one-sentence rationale]
-   - Credit: [stance] — [one-sentence rationale]
-   - Hedging: [stance] — [one-sentence rationale]
-   Frame ALL positioning as "consistent with [condition]" — never as a directive.
-   Add a footer line in italics: "Positioning reflects model output only and should be
-   evaluated against individual mandate constraints."
+   POSICIONAMIENTO, exactamente 4 viñetas:
+   - Renta variable: [postura] — [una frase con la fórmula «consistente con»]
+   - Renta fija: [postura] — [una frase]
+   - Crédito: [postura] — [una frase]
+   - Coberturas: [postura] — [una frase]
+   Toda postura se formula como «consistente con [condición]», nunca como una orden.
+   Cierra en cursiva: «El posicionamiento refleja solo la salida del modelo y debe
+   evaluarse frente a las restricciones de cada mandato.»
 
-   Place chart_0 (probability gauge) after this section.
+   Después de esta sección, chart_0 (el medidor).
 
-3. **Executive Summary** (3-5 sentences) — The headline figure is the ENSEMBLE probability.
-   Lead with: "Our five-model ensemble estimates [X]% probability of recession in the next
-   12 months — consistent with expansion-phase conditions, though model dispersion warrants
-   attention." Do NOT use "LOW risk," "MODERATE risk," or "HIGH risk" as labels. Instead
-   describe what the probability level is consistent with. Note consensus strength. The
-   BIC-selected model is one input among five. If models diverge, state the divergence
-   factually and defer the explanation to the Model Divergence section.
+3. **Resumen ejecutivo** (3 a 5 frases). La cifra principal es la probabilidad del
+   ENSAMBLE. Empieza así: «Nuestro ensamble de cinco modelos estima un [X]% de
+   probabilidad de recesión en los próximos 12 meses, consistente con una fase de
+   expansión, aunque la dispersión entre modelos merece atención.» No uses
+   «riesgo bajo», «riesgo moderado» ni «riesgo alto». Describe con qué es consistente
+   ese nivel. Señala la fuerza del consenso. El modelo seleccionado por BIC es uno
+   de cinco. Si divergen, dilo con el dato y deja la explicación para la sección
+   de divergencia.
 
-   Place chart_1 (probability trend) and chart_3 (model comparison) after this section.
+   Después, chart_1 (tendencia) y chart_3 (comparación).
 
-4. **Key Indicators** — Consolidate into exactly four macro buckets. Each gets exactly two
-   sentences: what the indicators currently show, and what that implies for recession risk.
-   Do NOT define what indicators measure. Do NOT include historical context or background.
+4. **Indicadores clave.** Exactamente cuatro bloques. Cada uno, dos frases:
+   qué muestran ahora y qué implica eso para el riesgo de recesión. No definas
+   qué mide cada indicador. No des contexto histórico.
 
-   **Growth** (housing starts, new home sales): [current readings] [recession risk implication]
-   **Inflation** (core CPI, PPI): [current readings] [recession risk implication]
-   **Policy** (fed funds rate, yield curve spread): [current readings] [recession risk implication]
-   **Market Signals** (credit spreads, consumer sentiment): [current readings] [recession risk implication]
+   **Crecimiento** (HOUST, HSN1F): lectura e implicación.
+   **Inflación** (CPILFESL_YOY, PPIACO_YOY): lectura e implicación.
+   **Política** (FEDFUNDS, SPREAD): lectura e implicación.
+   **Señales de mercado** (diferenciales de crédito, sentimiento): lectura e implicación.
 
-   Place chart_2 (indicator percentiles) and chart_4 (sparklines) after this section.
+   Después, chart_2 (percentiles) y chart_4 (trayectorias).
 
-5. **Model Divergence Analysis** — Structure as exactly three paragraphs:
+5. **Divergencia entre modelos.** Exactamente tres párrafos:
 
-   Paragraph 1 — Why the yield curve signal still matters: The term spread has preceded every
-   recession since 1968. The current un-inversion phase is historically the most dangerous
-   period — recessions typically begin 6-18 months after the curve steepens from inversion.
+   Párrafo 1. Por qué sigue importando la curva: el diferencial de plazos ha
+   precedido cada recesión desde 1968. La fase actual, de salida de la inversión,
+   es históricamente la más delicada: las recesiones suelen empezar entre 6 y 18
+   meses después de que la curva se empina tras haber estado invertida.
 
-   Paragraph 2 — Why this cycle may differ (three specific structural factors only):
-   (a) QE suppressed term premium artificially, making inversion easier to achieve without
-   credit tightening; (b) foreign central bank demand for Treasuries compressed long-end yields
-   independent of growth expectations; (c) post-Basel III bank regulation reduced duration risk
-   appetite, flattening the curve structurally.
+   Párrafo 2. Por qué este ciclo puede ser distinto, solo estos tres factores:
+   (a) la expansión cuantitativa comprimió de forma artificial la prima de plazo,
+   así que la inversión se alcanza sin un endurecimiento equivalente del crédito;
+   (b) la demanda de Treasuries por bancos centrales extranjeros bajó los tipos
+   largos al margen de las expectativas de crecimiento; (c) la regulación posterior
+   a Basilea III redujo el apetito bancario por duración y aplanó la curva de
+   manera estructural.
 
-   Paragraph 3 — Our judgment: one clear sentence stating which interpretation the ensemble
-   weighting implies, followed by one sentence on what evidence would confirm or deny it.
-   Write with institutional conviction while acknowledging the judgment call.
+   Párrafo 3. El juicio: una frase sobre qué lectura implica la ponderación del
+   ensamble, y otra sobre qué evidencia la confirmaría o la descartaría.
 
-   Include this limitation note verbatim at the end of the section: "Note: the model assigns
-   a negative coefficient to inflation, reflecting the historical pattern where demand-collapse
-   recessions are preceded by disinflation — this may understate stagflation risk in the
-   current tariff environment where inflation and growth weakness could occur simultaneously."
+   Cierra la sección con esta nota, literal: «Nota: el modelo asigna un coeficiente
+   negativo a la inflación, porque históricamente las recesiones por colapso de la
+   demanda vienen precedidas de desinflación. Eso puede subestimar el riesgo de
+   estanflación cuando la inflación y la debilidad del crecimiento coinciden.»
 
-   Place chart_5 (historical probability) after this section.
+   Después, chart_5 (historia).
 
-6. **Watchlist — Trigger Levels** — Present the sensitivity data as a concrete watchlist table.
-   Rank by which triggers are CLOSEST to being hit (smallest distance from current).
-   For each: the indicator, current value, trigger value, distance, and what real-world event
-   could cause the move. Two sentences maximum per indicator.
+6. **Lista de seguimiento.** Tabla con los datos de sensibilidad, ordenada por
+   el umbral más cercano al valor actual. En cada fila: el código del indicador,
+   el valor actual, el umbral, la distancia y qué hecho real podría provocar el
+   movimiento. Máximo dos frases por indicador.
 
-   Place chart_6 (sensitivity/watchlist) after this section.
+   Después, chart_6.
 
-7. **Adverse Scenario** — Structure as follows. Do NOT assign a numerical probability to this
-   scenario — the model does not estimate conditional joint probabilities and fabricating one
-   would be misleading.
+7. **Escenario adverso.** No le asignes una probabilidad numérica: el modelo no
+   estima probabilidades conjuntas condicionales, e inventar una sería engañoso.
 
-   SCENARIO CLASSIFICATION: "Tail risk. Requires simultaneous deterioration across uncorrelated
-   indicators — historically rare outside of systemic financial crises or external shock events."
+   CLASIFICACIÓN, literal: «Riesgo de cola. Exige un deterioro simultáneo de
+   indicadores poco correlacionados, algo históricamente raro fuera de una crisis
+   financiera sistémica o de un shock externo.»
 
-   REAL-WORLD TRIGGERS (three bullets):
-   (a) Major Fed policy error — overtightening into slowing growth, forcing rapid pivot that
-       destabilizes credit markets.
-   (b) Energy price shock — sustained oil above $130/barrel reigniting PPI acceleration while
-       suppressing consumer demand.
-   (c) Credit event — regional bank stress or sovereign contagion forcing broad credit spread
-       widening and loan contraction.
+   DISPARADORES, tres viñetas:
+   (a) Error grave de la Fed: endurecer de más con el crecimiento ya flojo y verse
+       forzada a un giro brusco que desordene el crédito.
+   (b) Shock energético: petróleo por encima de 130 dólares de forma sostenida,
+       que reacelere PPIACO_YOY y frene el consumo.
+   (c) Evento de crédito: tensión en bancos regionales o contagio soberano, con
+       ampliación de diferenciales y contracción del crédito.
 
-   HEDGING IMPLICATION (one paragraph): Apply this framework to the CURRENT ensemble reading:
-   - Below 20% ensemble with stable trend = monitoring posture only, standard rebalancing
-   - 20-35% with rising trend = consider tail hedges (long vol, Treasury duration extension)
-   - Above 35% = defensive repositioning warranted
-   State the current reading, which bracket it falls in, and the explicit conclusion.
+   IMPLICACIÓN PARA COBERTURAS, un párrafo, aplicado a la lectura ACTUAL del ensamble:
+   - Por debajo de 20% y tendencia estable: solo vigilancia y rebalanceo habitual.
+   - Entre 20% y 35% con tendencia al alza: coberturas de cola (volatilidad larga,
+     más duración en Treasuries).
+   - Por encima de 35%: conviene un reposicionamiento defensivo.
+   Di la lectura actual, en qué tramo cae y la conclusión explícita.
 
-   WHAT TO WATCH: Two sentences on which of the three triggers above is most proximate
-   given current data.
+   QUÉ VIGILAR: dos frases sobre cuál de los tres disparadores está más cerca
+   con los datos de hoy.
 
-8. **What Would Change Our View** — Numbered list of exactly five items. Each includes the
-   indicator, the specific threshold, and the economic implication. Use these EXACT items:
+8. **Qué cambiaría la lectura.** Lista numerada de exactamente cinco puntos.
+   Usa estos textos, sin recalcular los umbrales ni cambiar el sentido:
 
-   1. Term spread falls below -1.0% — historically associated with hard landing risk; would
-      trigger material upward revision to ensemble.
-   2. Core CPI drops below 1.5% — signals demand destruction outpacing supply normalization;
-      deflation risk inconsistent with soft landing.
-   3. Housing starts decline exceeds 15% year-over-year — indicates mortgage rate transmission
-      accelerating beyond stabilization phase.
-   4. Initial jobless claims sustain above 300K on four-week average — early deterioration in
-      labor demand before unemployment rate responds.
-   5. Ensemble probability rises above 20% for two consecutive monthly updates — model
-      convergence signal that would warrant defensive repositioning review.
+   1. SPREAD cae por debajo de -1,0%: históricamente asociado a un aterrizaje brusco;
+      obligaría a revisar el ensamble al alza de forma material.
+   2. La inflación subyacente (CPILFESL_YOY) baja de 1,5%: la destrucción de demanda
+      va por delante de la normalización de la oferta; un riesgo de deflación
+      incompatible con un aterrizaje suave.
+   3. HOUST cae más de un 15% interanual: la transmisión de la tasa hipotecaria se
+      acelera más allá de la fase de estabilización.
+   4. Las solicitudes iniciales de subsidio de desempleo se sostienen por encima de
+      300.000 en el promedio de cuatro semanas: el empleo se deteriora antes de que
+      reaccione la tasa de desempleo.
+   5. El ensamble supera el 20% durante dos actualizaciones mensuales seguidas:
+      señal de convergencia que justificaría revisar un reposicionamiento defensivo.
 
-   These thresholds are hardcoded. Do not compute them dynamically or modify the wording.
+9. **Vigencia de los datos.** Una caja gris con borde. Usa los campos
+   "data_through" y "lagged_series" del JSON, pero redacta en español:
+   «Aviso de vigencia: este informe usa datos de FRED disponibles hasta
+   [data_through]. Las series con rezago de publicación superior a 30 días,
+   que se actualizarán en su próxima publicación, son: [lista, o «ninguna»].
+   Las condiciones pueden haber cambiado desde ese corte. Las probabilidades
+   se actualizan en la próxima corrida programada.»
 
-9. **Data Currency Notice** — Format as a gray bordered box. Use the "data_through" and
-   "lagged_series" fields from the JSON:
-   "Data Currency Notice: This briefing reflects FRED data available through [data_through].
-   The following series have publication lags exceeding 30 days and will update on their next
-   FRED vintage release: [comma-separated lagged_series list, or 'None' if empty]. Conditions
-   may have changed materially since the data cutoff. Model probabilities will refresh
-   automatically on next scheduled run."
+10. **Cierre para el comité.** 2 o 3 frases. Empieza con el ensamble:
+    «El ensamble de cinco modelos está en [X]%, consistente con condiciones de
+    [expansión / contracción / transición].» Menciona el umbral más cercano de
+    la lista de seguimiento y di qué cambiaría la recomendación. Sin etiquetas
+    de semáforo.
 
-10. **Bottom Line for the Committee** — 2-3 sentences. Lead with the ensemble figure:
-    "Our five-model ensemble at [X]% — consistent with [expansion/contraction/transition]
-    conditions." Reference the nearest trigger from the watchlist. State what would change
-    the recommendation. Do NOT use traffic-light labels.
+REGLAS DE REDACCIÓN:
+- No repitas lo que el gráfico ya muestra.
+- No definas qué mide un indicador.
+- No uses «cabe destacar», «es importante señalar» ni «vale la pena notar».
+- No cubras cada frase con un condicional. Escribe con convicción.
+- Nunca describas la probabilidad como «riesgo bajo» o «riesgo alto». Di con
+  qué situación es consistente.
 
-LANGUAGE RULES (apply globally across all sections):
-- Remove any sentence that restates what a chart already shows.
-- Remove any sentence that defines what an indicator measures (the committee knows).
-- Replace "suggests" with "indicates" or "shows" where the evidence is clear.
-- Replace "may" with "could" where appropriate.
-- Eliminate all uses of "it's worth noting," "notably," "importantly," and "it is important to."
-- Do not hedge every sentence. Write with institutional conviction.
-- Never describe probability as "LOW risk" or "HIGH risk" — describe what it is consistent with.
+El cuerpo va en HTML limpio, con CSS en línea, apto para un cliente de correo.
+Extensión: 1000 a 1500 palabras. Es un memorando institucional, no un resumen
+de blog. Tono de un economista senior ante la dirección: concreto y con criterio.
+Sin emojis. Usa el signo de porcentaje.
 
-Format the email body as clean HTML suitable for email clients. Use inline CSS only.
-Target length: 1000-1500 words. This is an institutional investment memo, not a blog summary.
-The tone should be that of a senior economist briefing the CIO — authoritative, specific,
-and willing to take a view.
-Do not use emojis. Use percentage signs and basis points where appropriate.
-
-Return your response as JSON with two keys:
-- "subject": the email subject line
-- "html_body": the full HTML email body
+Responde en JSON con dos claves:
+- "subject": el asunto, en español
+- "html_body": el cuerpo HTML completo, en español
 """
 
     # Qwen acepta como máximo 3 imágenes por consulta. El JSON ya trae
@@ -318,7 +326,7 @@ Return your response as JSON with two keys:
     except json.JSONDecodeError:
         # Fallback: use the raw text as the body
         result = {
-            "subject": f"Recession Probability Report — {summary['bic_probability']}% ({summary['signal']})",
+            "subject": f"Probabilidad de recesión — {summary['bic_probability']}%",
             "html_body": f"<html><body><pre>{response_text}</pre></body></html>",
         }
 
@@ -332,9 +340,9 @@ def embed_charts_in_html(html_body, summary):
         # Add image tags where appropriate (at the end if not already present)
         if chart_name not in html_body:
             section_map = {
-                "recession_probability_gauge.png": "Executive Summary",
-                "recession_probability_history.png": "historical",
-                "sensitivity_chart.png": "Sensitivity",
+                "recession_probability_gauge.png": "Resumen para el comité",
+                "recession_probability_history.png": "Divergencia entre modelos",
+                "sensitivity_chart.png": "Lista de seguimiento",
             }
             for keyword in section_map.values():
                 if keyword.lower() in html_body.lower():

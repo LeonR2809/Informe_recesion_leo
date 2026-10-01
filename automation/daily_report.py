@@ -71,46 +71,46 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 # FRED series definitions
 # ---------------------------------------------------------------------------
 SERIES_CONFIG = {
-    "CFNAI":    {"name": "Chicago Fed National Activity Index",   "category": "National Activity", "transform": "level"},
-    "CFNAIMA3": {"name": "CFNAI 3-Month Moving Average",         "category": "National Activity", "transform": "level"},
-    "GDPC1":    {"name": "Real GDP",                              "category": "National Activity", "transform": "yoy", "freq": "Q"},
-    "USSLIND":  {"name": "Leading Index for the US",              "category": "National Activity", "transform": "level"},
-    "INDPRO":   {"name": "Industrial Production Index",           "category": "Industrial", "transform": "yoy"},
-    "BSCICP02USM460S": {"name": "OECD Manufacturing Confidence",  "category": "Industrial", "transform": "level"},
-    "TCU":      {"name": "Capacity Utilization",                  "category": "Industrial", "transform": "level"},
-    "DGORDER":  {"name": "Durable Goods Orders",                  "category": "Industrial", "transform": "yoy"},
-    "IPMAN":    {"name": "Industrial Production: Manufacturing",  "category": "Industrial", "transform": "yoy"},
-    "UMCSENT":  {"name": "U. Michigan Consumer Sentiment",        "category": "Consumer", "transform": "level"},
-    "PCECC96":  {"name": "Real Personal Consumption Expenditures","category": "Consumer", "transform": "yoy"},
-    "DSPIC96":  {"name": "Real Disposable Personal Income",       "category": "Consumer", "transform": "yoy"},
-    "RSAFS":    {"name": "Advance Retail Sales",                  "category": "Consumer", "transform": "yoy"},
-    "UNRATE":   {"name": "Unemployment Rate",                     "category": "Labor", "transform": "level"},
-    "ICSA":     {"name": "Initial Unemployment Claims",           "category": "Labor", "transform": "yoy", "freq": "W"},
-    "PAYEMS":   {"name": "Total Nonfarm Payrolls",                "category": "Labor", "transform": "yoy"},
-    "JTSJOL":   {"name": "Job Openings (JOLTS)",                  "category": "Labor", "transform": "yoy"},
-    "CPIAUCSL": {"name": "CPI All Urban Consumers",              "category": "Inflation", "transform": "yoy"},
-    "PCEPILFE": {"name": "Core PCE Price Index",                  "category": "Inflation", "transform": "yoy"},
-    "PCEPI":    {"name": "PCE Chain-Type Price Index",            "category": "Inflation", "transform": "yoy"},
-    "CPILFESL": {"name": "Core CPI",                              "category": "Inflation", "transform": "yoy"},
-    "PPIACO":   {"name": "PPI All Commodities",                   "category": "Inflation", "transform": "yoy"},
-    "HOUST":    {"name": "Housing Starts",                        "category": "Housing", "transform": "yoy"},
-    "PERMIT":   {"name": "Building Permits",                      "category": "Housing", "transform": "yoy"},
-    "HSN1F":    {"name": "New One-Family Houses Sold",            "category": "Housing", "transform": "yoy"},
-    "CSUSHPISA":{"name": "Case-Shiller National Home Price Index","category": "Housing", "transform": "yoy"},
-    "BAA10YM":  {"name": "Baa Corp Bond - 10Y Treasury Spread",  "category": "Banking", "transform": "level"},
-    "BUSLOANS": {"name": "Commercial & Industrial Loans",         "category": "Banking", "transform": "yoy"},
-    "DRALACBS": {"name": "Delinquency Rate, All Loans",           "category": "Banking", "transform": "level", "freq": "Q"},
-    "DRTSCILM": {"name": "Tightening Standards C&I Loans",        "category": "Banking", "transform": "level", "freq": "Q"},
-    "T10Y3M":   {"name": "10Y-3M Treasury Spread",               "category": "Yields", "transform": "level", "freq": "D"},
-    "T10Y2Y":   {"name": "10Y-2Y Treasury Spread",               "category": "Yields", "transform": "level", "freq": "D"},
-    "GS10":     {"name": "10-Year Treasury Yield",                "category": "Yields", "transform": "level"},
-    "TB3MS":    {"name": "3-Month Treasury Bill Rate",            "category": "Yields", "transform": "level"},
-    "FEDFUNDS": {"name": "Federal Funds Rate",                    "category": "Yields", "transform": "level"},
+    "CFNAI":    {"name": "Chicago Fed National Activity Index",   "category": "Actividad nacional", "transform": "level"},
+    "CFNAIMA3": {"name": "CFNAI 3-Month Moving Average",         "category": "Actividad nacional", "transform": "level"},
+    "GDPC1":    {"name": "Real GDP",                              "category": "Actividad nacional", "transform": "yoy", "freq": "Q"},
+    "USSLIND":  {"name": "Leading Index for the US",              "category": "Actividad nacional", "transform": "level"},
+    "INDPRO":   {"name": "Industrial Production Index",           "category": "Industria", "transform": "yoy"},
+    "BSCICP02USM460S": {"name": "OECD Manufacturing Confidence",  "category": "Industria", "transform": "level"},
+    "TCU":      {"name": "Capacity Utilization",                  "category": "Industria", "transform": "level"},
+    "DGORDER":  {"name": "Durable Goods Orders",                  "category": "Industria", "transform": "yoy"},
+    "IPMAN":    {"name": "Industrial Production: Manufacturing",  "category": "Industria", "transform": "yoy"},
+    "UMCSENT":  {"name": "U. Michigan Consumer Sentiment",        "category": "Consumo", "transform": "level"},
+    "PCECC96":  {"name": "Real Personal Consumption Expenditures","category": "Consumo", "transform": "yoy"},
+    "DSPIC96":  {"name": "Real Disposable Personal Income",       "category": "Consumo", "transform": "yoy"},
+    "RSAFS":    {"name": "Advance Retail Sales",                  "category": "Consumo", "transform": "yoy"},
+    "UNRATE":   {"name": "Unemployment Rate",                     "category": "Trabajo", "transform": "level"},
+    "ICSA":     {"name": "Initial Unemployment Claims",           "category": "Trabajo", "transform": "yoy", "freq": "W"},
+    "PAYEMS":   {"name": "Total Nonfarm Payrolls",                "category": "Trabajo", "transform": "yoy"},
+    "JTSJOL":   {"name": "Job Openings (JOLTS)",                  "category": "Trabajo", "transform": "yoy"},
+    "CPIAUCSL": {"name": "CPI All Urban Consumers",              "category": "Inflación", "transform": "yoy"},
+    "PCEPILFE": {"name": "Core PCE Price Index",                  "category": "Inflación", "transform": "yoy"},
+    "PCEPI":    {"name": "PCE Chain-Type Price Index",            "category": "Inflación", "transform": "yoy"},
+    "CPILFESL": {"name": "Core CPI",                              "category": "Inflación", "transform": "yoy"},
+    "PPIACO":   {"name": "PPI All Commodities",                   "category": "Inflación", "transform": "yoy"},
+    "HOUST":    {"name": "Housing Starts",                        "category": "Vivienda", "transform": "yoy"},
+    "PERMIT":   {"name": "Building Permits",                      "category": "Vivienda", "transform": "yoy"},
+    "HSN1F":    {"name": "New One-Family Houses Sold",            "category": "Vivienda", "transform": "yoy"},
+    "CSUSHPISA":{"name": "Case-Shiller National Home Price Index","category": "Vivienda", "transform": "yoy"},
+    "BAA10YM":  {"name": "Baa Corp Bond - 10Y Treasury Spread",  "category": "Banca", "transform": "level"},
+    "BUSLOANS": {"name": "Commercial & Industrial Loans",         "category": "Banca", "transform": "yoy"},
+    "DRALACBS": {"name": "Delinquency Rate, All Loans",           "category": "Banca", "transform": "level", "freq": "Q"},
+    "DRTSCILM": {"name": "Tightening Standards C&I Loans",        "category": "Banca", "transform": "level", "freq": "Q"},
+    "T10Y3M":   {"name": "10Y-3M Treasury Spread",               "category": "Rendimientos", "transform": "level", "freq": "D"},
+    "T10Y2Y":   {"name": "10Y-2Y Treasury Spread",               "category": "Rendimientos", "transform": "level", "freq": "D"},
+    "GS10":     {"name": "10-Year Treasury Yield",                "category": "Rendimientos", "transform": "level"},
+    "TB3MS":    {"name": "3-Month Treasury Bill Rate",            "category": "Rendimientos", "transform": "level"},
+    "FEDFUNDS": {"name": "Federal Funds Rate",                    "category": "Rendimientos", "transform": "level"},
 }
 
 TARGET_SERIES = {
-    "USREC": {"name": "NBER Recession Indicator", "category": "Target"},
-    "RECPROUSM156N": {"name": "Chauvet-Piger Recession Prob", "category": "Benchmark"},
+    "USREC": {"name": "NBER Recession Indicator", "category": "Objetivo"},
+    "RECPROUSM156N": {"name": "Chauvet-Piger Recession Prob", "category": "Referencia"},
 }
 
 
@@ -176,10 +176,10 @@ def engineer_features(data):
 
     if "SPREAD" in data.columns:
         feature_cols.append("SPREAD")
-        feat_to_cat["SPREAD"] = "Yields (derived)"
+        feat_to_cat["SPREAD"] = "Rendimientos (derivada)"
     if "UNRATE_CHG3" in data.columns:
         feature_cols.append("UNRATE_CHG3")
-        feat_to_cat["UNRATE_CHG3"] = "Labor (derived)"
+        feat_to_cat["UNRATE_CHG3"] = "Trabajo (derivada)"
 
     feature_cols = sorted(set(feature_cols))
 
@@ -299,8 +299,8 @@ def generate_gauge_chart(prob, output_path):
     ax.axvline(x=THRESHOLD_WARNING, color="gray", linewidth=0.8, linestyle="--", alpha=0.5)
     ax.axvline(x=THRESHOLD_ELEVATED, color="gray", linewidth=0.8, linestyle="--", alpha=0.5)
     ax.set_yticks([])
-    ax.set_xlabel("Recession Probability (%)")
-    ax.set_title("12-Month-Ahead U.S. Recession Probability", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Probabilidad de recesión (%)")
+    ax.set_title("Probabilidad de recesión en EE. UU. a 12 meses", fontsize=14, fontweight="bold")
     ax.spines["top"].set_visible(False)
     ax.spines["left"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -315,19 +315,19 @@ def generate_history_chart(fitted, oos, usrec, output_path):
     fig, ax = plt.subplots(figsize=(14, 5))
 
     ax.fill_between(usrec.index, 0, 100, where=usrec.values == 1,
-                    color="#e0e0e0", alpha=0.7, label="NBER Recession")
+                    color="#e0e0e0", alpha=0.7, label="Recesión NBER")
     ax.plot(fitted.index, fitted * 100, color="#1a1a2e", linewidth=1.2,
-            label="BIC-Selected Model")
+            label="Modelo seleccionado por BIC")
 
     if oos is not None and len(oos) > 0:
         ax.plot(oos.index, oos * 100, color="#e74c3c", linewidth=1.2,
-                alpha=0.7, label="Out-of-Sample")
+                alpha=0.7, label="Fuera de muestra")
 
     ax.axhline(y=THRESHOLD_ELEVATED, color="red", linestyle="--", alpha=0.3)
     ax.axhline(y=THRESHOLD_WARNING, color="orange", linestyle=":", alpha=0.3)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("Probability (%)")
-    ax.set_title("Historical 12-Month-Ahead Recession Probability", fontsize=13, fontweight="bold")
+    ax.set_ylabel("Probabilidad (%)")
+    ax.set_title("Historia de la probabilidad de recesión a 12 meses", fontsize=13, fontweight="bold")
     ax.legend(loc="upper right", fontsize=9)
     ax.xaxis.set_major_locator(mdates.YearLocator(5))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
@@ -386,7 +386,7 @@ def generate_sensitivity_chart(scenario_data, output_path):
         ax.spines["left"].set_visible(False)
         ax.tick_params(axis="x", labelsize=7)
 
-    axes[0].set_title("Watchlist: Current Value vs. Trigger Levels", fontsize=13, fontweight="bold")
+    axes[0].set_title("Lista de seguimiento: valor actual frente a umbrales", fontsize=13, fontweight="bold")
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor="white")
     plt.close()
@@ -414,17 +414,17 @@ def generate_percentile_chart(bic_selected, latest_vals, model_df, feat_to_cat, 
             colors.append("#2ca02c")  # green = normal
 
     bars = ax.barh(labels, pctiles, color=colors, edgecolor="white", linewidth=0.5)
-    ax.axvline(x=50, color="gray", linestyle="--", alpha=0.4, label="Median")
+    ax.axvline(x=50, color="gray", linestyle="--", alpha=0.4, label="Mediana")
     ax.axvline(x=10, color="red", linestyle=":", alpha=0.3)
     ax.axvline(x=90, color="red", linestyle=":", alpha=0.3)
 
     for bar, pct in zip(bars, pctiles):
         ax.text(bar.get_width() + 1.5, bar.get_y() + bar.get_height() / 2,
-                f"{pct:.0f}th", va="center", fontsize=9, fontweight="bold")
+                f"{pct:.0f}", va="center", fontsize=9, fontweight="bold")
 
     ax.set_xlim(0, 105)
-    ax.set_xlabel("Historical Percentile")
-    ax.set_title("Indicator Dashboard: Where Are We Historically?", fontsize=13, fontweight="bold")
+    ax.set_xlabel("Percentil histórico")
+    ax.set_title("Tablero de indicadores: ¿dónde estamos en la historia?", fontsize=13, fontweight="bold")
     ax.legend(fontsize=9)
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor="white")
@@ -442,17 +442,23 @@ def generate_model_comparison_chart(model_probs, output_path):
     probs = [p[1] for p in sorted_pairs]
 
     fig, ax = plt.subplots(figsize=(10, max(2.5, len(names) * 0.55)))
-    colors = ["#1f77b4" if n == "BIC-Selected" else "#aec7e8" for n in names]
-    bars = ax.barh(names, probs, color=colors, edgecolor="white")
+    etiquetas = {
+        "NY Fed (Spread Only)": "NY Fed (solo SPREAD)",
+        "Wright (Spread + FF)": "Wright (SPREAD + FF)",
+        "BIC-Selected": "Seleccionado por BIC",
+    }
+    colores = ["#1f77b4" if n == "BIC-Selected" else "#aec7e8" for n in names]
+    visibles = [etiquetas.get(n, n) for n in names]
+    bars = ax.barh(visibles, probs, color=colores, edgecolor="white")
 
     for bar, p in zip(bars, probs):
         ax.text(bar.get_width() + 0.3, bar.get_y() + bar.get_height() / 2,
                 f"{p:.1f}%", va="center", fontsize=10, fontweight="bold")
 
     ax.axvline(x=THRESHOLD_WARNING, color="orange", linestyle=":", alpha=0.5,
-               label=f"{THRESHOLD_WARNING}% warning")
-    ax.set_xlabel("Recession Probability (%)")
-    ax.set_title("Model Comparison: Do They Agree?", fontsize=13, fontweight="bold")
+               label=f"Alerta {THRESHOLD_WARNING}%")
+    ax.set_xlabel("Probabilidad de recesión (%)")
+    ax.set_title("Comparación de modelos: ¿coinciden?", fontsize=13, fontweight="bold")
     ax.set_xlim(0, max(max(probs) * 1.4, THRESHOLD_WARNING + 5))
     ax.legend(fontsize=9)
     plt.tight_layout()
@@ -498,7 +504,7 @@ def generate_sparklines(bic_selected, data, feat_to_cat, output_path):
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-    axes[0].set_title("Indicator Trends (Trailing 24 Months)", fontsize=13, fontweight="bold")
+    axes[0].set_title("Tendencia de los indicadores (últimos 24 meses)", fontsize=13, fontweight="bold")
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor="white")
     plt.close()
@@ -511,15 +517,15 @@ def generate_probability_trend(ensemble_series, bic_series, output_path):
 
     fig, ax = plt.subplots(figsize=(10, 3))
     ax.plot(recent.index, recent.values, color="#1a1a2e", linewidth=2,
-            label="5-Model Ensemble")
+            label="Ensamble de 5 modelos")
     ax.fill_between(recent.index, 0, recent.values, alpha=0.15, color="#1a1a2e")
     ax.plot(bic_recent.index, bic_recent.values, color="#aec7e8", linewidth=1,
-            linestyle="--", label="BIC-Selected")
+            linestyle="--", label="Seleccionado por BIC")
 
     ax.axhline(y=THRESHOLD_WARNING, color="orange", linestyle=":", alpha=0.5,
-               label=f"{THRESHOLD_WARNING}% warning")
+               label=f"Alerta {THRESHOLD_WARNING}%")
     ax.axhline(y=THRESHOLD_ELEVATED, color="red", linestyle="--", alpha=0.3,
-               label=f"{THRESHOLD_ELEVATED}% elevated")
+               label=f"Elevada {THRESHOLD_ELEVATED}%")
 
     # Annotate latest
     ax.annotate(f"{recent.iloc[-1]:.1f}%",
@@ -530,10 +536,17 @@ def generate_probability_trend(ensemble_series, bic_series, output_path):
 
     all_vals = pd.concat([recent, bic_recent])
     ax.set_ylim(0, max(all_vals.max() * 1.5, THRESHOLD_WARNING + 5))
-    ax.set_ylabel("Probability (%)")
-    ax.set_title("Probability Trend (Is Risk Rising or Falling?)", fontsize=13, fontweight="bold")
+    ax.set_ylabel("Probabilidad (%)")
+    ax.set_title("Tendencia de la probabilidad: ¿el riesgo sube o baja?", fontsize=13, fontweight="bold")
     ax.legend(fontsize=9)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b '%y"))
+    meses = ["ene", "feb", "mar", "abr", "may", "jun",
+             "jul", "ago", "sep", "oct", "nov", "dic"]
+
+    def _fecha_es(valor, _pos):
+        fecha = mdates.num2date(valor)
+        return f"{meses[fecha.month - 1]} '{fecha.year % 100:02d}"
+
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(_fecha_es))
     ax.grid(True, alpha=0.12)
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor="white")
